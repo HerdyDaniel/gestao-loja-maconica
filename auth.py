@@ -338,3 +338,34 @@ def definir_ativo(usuario_id: int, ativo: bool) -> None:
                 )
 
         registro.ativo = ativo
+
+
+def alterar_perfil(usuario_id: int, novo_perfil: str) -> None:
+    """Altera o perfil de um usuário entre Administrador e Membro.
+
+    Permite promover um membro existente a administrador (ou rebaixar,
+    respeitando a proteção do último administrador ativo) sem recriar o
+    usuário.
+    """
+    if novo_perfil not in PERFIS:
+        raise ValueError("Perfil inválido.")
+    with sessao() as db:
+        registro = db.get(models.Usuario, usuario_id)
+        if registro is None:
+            raise ValueError("Usuário não encontrado.")
+        if not registro.ativo:
+            raise ValueError("Usuário desativado.")
+        if novo_perfil == registro.role:
+            return
+        if novo_perfil == "Membro" and registro.role == "Administrador":
+            administradores_ativos = db.scalar(
+                select(func.count(models.Usuario.id)).where(
+                    models.Usuario.role == "Administrador",
+                    models.Usuario.ativo.is_(True),
+                )
+            )
+            if (administradores_ativos or 0) <= 1:
+                raise ValueError(
+                    "Não é possível rebaixar o último administrador ativo."
+                )
+        registro.role = novo_perfil

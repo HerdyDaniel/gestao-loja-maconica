@@ -823,6 +823,26 @@ def _secao_usuarios() -> None:
                 except ValueError as erro:
                     st.error(str(erro))
 
+        with st.form("form_alterar_perfil"):
+            novo_perfil = st.selectbox(
+                "Perfil",
+                PERFIS,
+                index=PERFIS.index(alvo["role"]),
+                key=f"perfil_{alvo_id}",
+            )
+            alterar = st.form_submit_button("Salvar perfil", type="primary")
+
+        if alterar:
+            try:
+                auth.alterar_perfil(alvo_id, novo_perfil)
+                definir_flash(
+                    "success",
+                    f"Perfil de **{alvo['nome']}** alterado para **{novo_perfil}**.",
+                )
+                st.rerun()
+            except ValueError as erro:
+                st.error(str(erro))
+
         st.divider()
         eh_eu = alvo_id == (usuario_atual() or {}).get("id")
         rotulo = "Desativar usuário" if alvo["ativo"] else "Reativar usuário"
