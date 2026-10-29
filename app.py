@@ -39,9 +39,12 @@ BRAND_LARGURA = 140
 
 
 def _marca() -> None:
-    """Exibe o timbre da loja no lugar do logotipo azul padrão."""
-    st.image(BRAND_IMAGE, width=BRAND_LARGURA)
-    st.title("Gestão da Loja")
+    """Exibe o timbre da loja ao lado do título."""
+    col_timbre, col_titulo = st.columns([1, 3], vertical_alignment="center")
+    with col_timbre:
+        st.image(BRAND_IMAGE, width=BRAND_LARGURA)
+    with col_titulo:
+        st.title("Gestão da Loja")
 
 
 st.set_page_config(
