@@ -707,7 +707,12 @@ def _secao_usuarios() -> None:
             )
             confirmar = col2.text_input("Confirmar senha *", type="password")
             col3, col4 = st.columns(2)
-            perfil = col3.selectbox("Perfil *", PERFIS)
+            perfil = col3.selectbox(
+                "Perfil *",
+                PERFIS,
+                index=PERFIS.index("Membro"),
+                help="Padrão: Membro. Administrador só com autorização explícita.",
+            )
             vinculo = col4.selectbox(
                 "Obreiro vinculado",
                 list(opcoes_obreiro),
